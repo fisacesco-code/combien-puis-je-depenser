@@ -614,12 +614,20 @@ input:focus-visible {
 
 .premium-tool-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-  gap: 18px;
-  align-items: start;
+  grid-template-columns: minmax(240px, 0.55fr) minmax(360px, 1.45fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.premium-tool-grid .field,
+.premium-tool-grid .input-shell {
+  max-width: 360px;
 }
 
 .premium-summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 22px;
   border: 1px solid #e7ebf3;
   border-radius: 18px;
@@ -638,7 +646,7 @@ input:focus-visible {
 .premium-summary-value {
   margin: 0;
   color: var(--accent);
-  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-size: clamp(2.8rem, 7vw, 4.5rem);
   font-weight: 700;
   line-height: 1;
 }
