@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Et si j'arrêtais de travailler aujourd'hui ?</title>
+    <meta
+      name="description"
+      content="Estimateur simple de dépense annuelle et mensuelle à partir de votre patrimoine, de votre horizon de vie et d'un taux réel."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <button
+          class="language-switch"
+          id="language-switch"
+          type="button"
+          aria-label="Toggle language"
+        >
+          EN
+        </button>
+
+        <p class="eyebrow" data-i18n="hero.eyebrow">Planification financière</p>
+        <h1 class="hero-title" data-i18n="hero.title">
+          Et si j'arrêtais de travailler aujourd'hui ?
+        </h1>
+        <p class="hero-copy" data-i18n="hero.subtitle">
+          Estimez le montant que vous pouvez dépenser chaque année jusqu'à la fin
+          de votre vie, en tenant compte du rendement et de l'inflation.
+        </p>
+
+        <div class="hero-meta">
+          <span class="hero-badge" data-i18n="hero.badges.instant">Accès immédiat</span>
+          <span class="hero-badge" data-i18n="hero.badges.nosignup">Sans inscription</span>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Modes de calcul">
+          <button
+            class="tab-button is-active"
+            type="button"
+            id="tab-basic"
+            data-tab="basic"
+            role="tab"
+            aria-selected="true"
+          >
+            <span data-i18n="tabs.basic">Calcul de base</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            id="tab-scenarios"
+            data-tab="scenarios"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.scenarios">Scénarios</span>
+            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            data-tab="reverse"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.reverse">Mode reverse</span>
+            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            data-tab="income"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.extraIncome">Avec revenus complémentaires</span>
+            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            data-tab="sensitivity"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.ageSensitivity">Sensibilité à l'âge</span>
+            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            data-tab="ideas"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.ideas">Suggestions</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="panel panel-form" data-panel="basic">
+        <form id="planner-form" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="current-age" data-i18n="fields.currentAge.label">Âge actuel</label>
+              <div class="input-shell">
+                <input
+                  id="current-age"
+                  name="currentAge"
+                  type="number"
+                  inputmode="numeric"
+                  min="18"
+                  max="110"
+                  step="1"
+                  value="35"
+                  aria-describedby="current-age-error"
+                />
+                <span class="input-suffix" data-i18n="fields.currentAge.suffix">ans</span>
+              </div>
+              <p class="error-message" id="current-age-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="end-age" data-i18n="fields.endAge.label"
+                >Âge de fin de vie estimé</label
+              >
+              <div class="input-shell">
+                <input
+                  id="end-age"
+                  name="endAge"
+                  type="number"
+                  inputmode="numeric"
+                  min="19"
+                  max="120"
+                  step="1"
+                  value="90"
+                  aria-describedby="end-age-error"
+                />
+                <span class="input-suffix" data-i18n="fields.endAge.suffix">ans</span>
+              </div>
+              <p class="error-message" id="end-age-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="net-worth" data-i18n="fields.netWorth.label"
+                >Patrimoine net actuel</label
+              >
+              <div class="input-shell">
+                <input
+                  id="net-worth"
+                  name="netWorth"
+                  type="text"
+                  inputmode="numeric"
+                  value="500 000"
+                  aria-describedby="net-worth-error"
+                />
+                <span class="input-suffix">€</span>
+              </div>
+              <p class="error-message" id="net-worth-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="bequest" data-i18n="fields.bequest.label"
+                >Capital à laisser aux héritiers</label
+              >
+              <div class="input-shell">
+                <input
+                  id="bequest"
+                  name="bequest"
+                  type="text"
+                  inputmode="numeric"
+                  value="0"
+                  aria-describedby="bequest-help bequest-error"
+                />
+                <span class="input-suffix">€</span>
+              </div>
+              <p class="field-help" id="bequest-help" data-i18n="fields.bequest.help">
+                Optionnel
+              </p>
+              <p class="error-message" id="bequest-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="return-rate" data-i18n="fields.returnRate.label"
+                >Rendement annuel net du patrimoine</label
+              >
+              <div class="input-shell">
+                <input
+                  id="return-rate"
+                  name="returnRate"
+                  type="number"
+                  inputmode="decimal"
+                  min="-20"
+                  max="30"
+                  step="0.1"
+                  value="5"
+                  aria-describedby="return-rate-error"
+                />
+                <span class="input-suffix">%</span>
+              </div>
+              <p class="error-message" id="return-rate-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="inflation-rate" data-i18n="fields.inflation.label"
+                >Inflation annuelle moyenne</label
+              >
+              <div class="input-shell">
+                <input
+                  id="inflation-rate"
+                  name="inflationRate"
+                  type="number"
+                  inputmode="decimal"
+                  min="-10"
+                  max="20"
+                  step="0.1"
+                  value="2"
+                  aria-describedby="inflation-rate-error"
+                />
+                <span class="input-suffix">%</span>
+              </div>
+              <p class="error-message" id="inflation-rate-error"></p>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel panel-unlock hidden" data-panel="unlock" id="payment-section">
+        <div class="unlock-header">
+          <div>
+            <p class="premium-kicker" data-i18n="unlock.kicker">Débloquer l'analyse avancée</p>
+            <h2 data-i18n="unlock.title">Aller plus loin que le calcul de base</h2>
+            <p data-i18n="unlock.subtitle">
+              Pour quelques euros, l'internaute obtient une vision plus utile pour
+              décider sereinement.
+            </p>
+          </div>
+          <div class="unlock-trust">
+            <span class="unlock-trust-pill" data-i18n="unlock.trust.instant">Accès immédiat</span>
+            <span class="unlock-trust-pill" data-i18n="unlock.trust.onetime">Paiement unique</span>
+            <span class="unlock-trust-pill" data-i18n="unlock.trust.nosub">Pas d'abonnement</span>
+          </div>
+        </div>
+
+        <div class="beta-banner hidden" id="beta-banner">
+          <strong data-i18n="beta.bannerTitle">Mode bêta actif.</strong>
+          <span data-i18n="beta.bannerCopy"
+            >Les options premium sont actuellement accessibles gratuitement pour les
+            tests.</span
+          >
+          <button class="beta-banner-button" id="beta-unlock-button" type="button" data-i18n="beta.bannerCta">
+            Ouvrir les analyses premium
+          </button>
+        </div>
+
+        <div class="unlock-preview-grid">
+          <article class="unlock-preview-card">
+            <h3 data-i18n="unlock.preview.scenarios.title">Scénarios personnalisés</h3>
+            <p data-i18n="unlock.preview.scenarios.copy">
+              Voir immédiatement l'effet d'une inflation plus haute ou d'une vie
+              plus longue.
+            </p>
+          </article>
+          <article class="unlock-preview-card">
+            <h3 data-i18n="unlock.preview.income.title">Revenus complémentaires</h3>
+            <p data-i18n="unlock.preview.income.copy">
+              Ajouter pension, loyers, dividendes ou activité réduite.
+            </p>
+          </article>
+          <article class="unlock-preview-card">
+            <h3 data-i18n="unlock.preview.reverse.title">Capital cible</h3>
+            <p data-i18n="unlock.preview.reverse.copy">
+              Partir d'un niveau de vie souhaité pour remonter au patrimoine
+              nécessaire.
+            </p>
+          </article>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card">
+            <p class="price-label" data-i18n="pricing.light.label">Découverte</p>
+            <p class="price-amount">3 €</p>
+            <p class="price-copy" data-i18n="pricing.light.copy">
+              Idéal pour explorer les scénarios avancés une première fois.
+            </p>
+            <button class="price-button" type="button" data-payment-tier="light">
+              <span data-i18n="pricing.light.cta">Débloquer pour 3 €</span>
+            </button>
+          </article>
+
+          <article class="price-card price-card-featured">
+            <p class="price-label" data-i18n="pricing.standard.label">Le plus simple</p>
+            <p class="price-amount">5 €</p>
+            <p class="price-copy" data-i18n="pricing.standard.copy">
+              Le montant le plus naturel pour remercier l'outil et tout débloquer.
+            </p>
+            <button class="price-button" type="button" data-payment-tier="standard">
+              <span data-i18n="pricing.standard.cta">Contribuer 5 €</span>
+            </button>
+          </article>
+
+          <article class="price-card">
+            <p class="price-label" data-i18n="pricing.generous.label">Soutien</p>
+            <p class="price-amount">9 €</p>
+            <p class="price-copy" data-i18n="pricing.generous.copy">
+              Pour les utilisateurs qui veulent encourager le projet davantage.
+            </p>
+            <button class="price-button" type="button" data-payment-tier="generous">
+              <span data-i18n="pricing.generous.cta">Soutenir à 9 €</span>
+            </button>
+          </article>
+        </div>
+
+        <p class="payment-note" data-i18n="pricing.note">
+          Ces boutons sont prêts à être reliés à Stripe, Lemon Squeezy, Paddle ou
+          Ko-fi.
+        </p>
+        <div class="promo-box">
+          <label class="promo-label" for="promo-code" data-i18n="promo.label">Code d'accès bêta</label>
+          <div class="promo-row">
+            <input
+              class="promo-input"
+              id="promo-code"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="GRATUIT"
+            />
+            <button class="promo-button" id="promo-submit" type="button" data-i18n="promo.cta">
+              Valider
+            </button>
+          </div>
+          <p class="promo-help" data-i18n="promo.help">
+            Pour les premières versions, vous pouvez débloquer gratuitement les
+            options premium avec le code GRATUIT.
+          </p>
+        </div>
+        <p class="payment-status" id="payment-status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel panel-premium hidden" data-panel="scenarios">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker" data-i18n="scenario.kicker">Analyse premium</p>
+            <h2 data-i18n="scenario.title">Scénarios</h2>
+            <p data-i18n="scenario.subtitle">
+              Comparez l'impact d'une inflation plus forte ou d'une espérance de
+              vie plus longue en conservant votre rendement inchangé.
+            </p>
+          </div>
+        </div>
+        <div class="scenario-grid" id="scenario-grid"></div>
+      </section>
+
+      <section class="panel panel-premium hidden" data-panel="reverse">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker" data-i18n="reverse.kicker">Analyse premium</p>
+            <h2 data-i18n="reverse.title">Mode reverse</h2>
+            <p data-i18n="reverse.subtitle">
+              Partez d'un niveau de dépense mensuel cible pour estimer le
+              patrimoine net nécessaire.
+            </p>
+          </div>
+        </div>
+        <div class="premium-tool-grid">
+          <div class="field">
+            <label for="target-monthly" data-i18n="reverse.input">Dépense mensuelle visée</label>
+            <div class="input-shell">
+              <input id="target-monthly" type="text" inputmode="numeric" value="2 000" />
+              <span class="input-suffix">€</span>
+            </div>
+          </div>
+          <div class="premium-summary-card">
+            <p class="premium-summary-label" data-i18n="reverse.output">Patrimoine estimé nécessaire</p>
+            <p class="premium-summary-value" id="reverse-required-capital">—</p>
+            <p class="premium-summary-note" id="reverse-summary-note"></p>
+            <p class="premium-summary-extra" id="reverse-current-patrimony-note"></p>
+          </div>
+        </div>
+        <div class="embedded-chart-block">
+          <div class="chart-header">
+            <h3 data-i18n="reverse.chartTitle">Projection du patrimoine cible</h3>
+            <p data-i18n="reverse.chartNote">
+              Évolution du patrimoine nécessaire pour maintenir la dépense mensuelle visée.
+            </p>
+          </div>
+          <svg
+            id="reverse-chart"
+            class="wealth-chart"
+            viewBox="0 0 960 380"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+          ></svg>
+          <div class="chart-tooltip hidden" id="reverse-chart-tooltip" aria-hidden="true">
+            <p class="chart-tooltip-label" id="reverse-chart-tooltip-age">Âge 35 ans</p>
+            <p class="chart-tooltip-value" id="reverse-chart-tooltip-worth">650 k€</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-premium hidden" data-panel="income">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker" data-i18n="income.kicker">Analyse premium</p>
+            <h2 data-i18n="income.title">Avec revenus complémentaires</h2>
+            <p data-i18n="income.subtitle">
+              Ajoutez des revenus externes pour voir votre marge de dépense totale.
+            </p>
+          </div>
+        </div>
+        <div class="premium-tool-grid">
+          <div class="field">
+            <label for="extra-income" data-i18n="income.input">Revenus complémentaires mensuels</label>
+            <div class="input-shell">
+              <input id="extra-income" type="text" inputmode="numeric" value="500" />
+              <span class="input-suffix">€</span>
+            </div>
+          </div>
+          <div class="premium-summary-card">
+            <p class="premium-summary-label" data-i18n="income.output">Dépense mensuelle totale possible</p>
+            <p class="premium-summary-value" id="income-total-monthly">—</p>
+            <p class="premium-summary-note" id="income-summary-note"></p>
+          </div>
+        </div>
+        <div class="embedded-chart-block">
+          <div class="chart-header">
+            <h3 data-i18n="income.chartTitle">Évolution du patrimoine avec revenus complémentaires</h3>
+            <p data-i18n="income.chartNote">
+              Projection du patrimoine si une partie du niveau de vie est couverte par des revenus externes.
+            </p>
+          </div>
+          <svg
+            id="income-chart"
+            class="wealth-chart"
+            viewBox="0 0 960 380"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+          ></svg>
+          <div class="chart-tooltip hidden" id="income-chart-tooltip" aria-hidden="true">
+            <p class="chart-tooltip-label" id="income-chart-tooltip-age">Âge 35 ans</p>
+            <p class="chart-tooltip-value" id="income-chart-tooltip-worth">500 k€</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-premium hidden" data-panel="sensitivity">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker" data-i18n="sensitivity.kicker">Analyse premium</p>
+            <h2 data-i18n="sensitivity.title">Sensibilité à l'âge</h2>
+            <p data-i18n="sensitivity.subtitle">
+              Visualisez rapidement l'effet d'un horizon de vie plus court ou plus long.
+            </p>
+          </div>
+        </div>
+        <div class="sensitivity-grid" id="sensitivity-grid"></div>
+      </section>
+
+      <section class="panel panel-premium hidden" data-panel="ideas">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker" data-i18n="ideas.kicker">Vos idées</p>
+            <h2 data-i18n="ideas.title">Suggérer un nouveau calcul</h2>
+            <p data-i18n="ideas.subtitle">
+              Dites-nous quelle analyse ou quel cas d'usage vous aimeriez voir ajouté.
+            </p>
+          </div>
+        </div>
+        <form class="ideas-form" id="ideas-form">
+          <div class="form-grid">
+            <div class="field">
+              <label for="idea-name" data-i18n="ideas.name">Votre nom</label>
+              <div class="input-shell">
+                <input id="idea-name" type="text" autocomplete="name" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="idea-email" data-i18n="ideas.email">Votre email</label>
+              <div class="input-shell">
+                <input id="idea-email" type="email" inputmode="email" autocomplete="email" />
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="idea-message" data-i18n="ideas.message">Votre suggestion</label>
+            <textarea id="idea-message" class="ideas-textarea"></textarea>
+          </div>
+          <div class="ideas-actions">
+            <button class="support-cta" id="ideas-submit" type="submit" data-i18n="ideas.cta">
+              Envoyer la suggestion
+            </button>
+            <p class="payment-status" id="ideas-status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel panel-results" data-basic-only>
+        <p class="result-label" data-i18n="results.prefix">Vous pouvez dépenser</p>
+        <p class="result-primary" id="monthly-result">1 538 €</p>
+        <p class="result-unit" data-i18n="results.perMonth">par mois</p>
+        <div class="result-chips">
+          <span class="result-chip" id="summary-years">55 ans</span>
+          <span class="result-chip" id="summary-real-rate">Taux réel 2.94 %</span>
+          <span class="result-chip" id="summary-bequest">Héritage 0 €</span>
+        </div>
+        <div class="result-divider" aria-hidden="true"></div>
+        <p class="result-secondary" id="annual-result">18 453 €</p>
+        <p class="result-unit" data-i18n="results.perYear">par an</p>
+        <p class="result-meta" id="result-meta">Sur 55 ans · Taux réel 2.94 %</p>
+        <p class="result-explainer" data-i18n="results.explainer">
+          Montant constant estimé en euros d'aujourd'hui, hors fiscalité et frais
+          spécifiques.
+        </p>
+      </section>
+
+      <section class="panel panel-chart" data-basic-only>
+        <div class="chart-header">
+          <h2 data-i18n="chart.title">Évolution du patrimoine</h2>
+          <p data-i18n="chart.note">
+            Calcul basé sur une annuité constante en euros d'aujourd'hui.
+          </p>
+        </div>
+        <svg
+          id="wealth-chart"
+          class="wealth-chart"
+          viewBox="0 0 960 380"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-labelledby="chart-title chart-desc"
+        >
+          <title id="chart-title">Évolution du patrimoine</title>
+          <desc id="chart-desc">
+            Courbe de projection du patrimoine sur l'horizon de vie estimé.
+          </desc>
+        </svg>
+        <div class="chart-tooltip hidden" id="chart-tooltip" aria-hidden="true">
+          <p class="chart-tooltip-label" id="chart-tooltip-age">Âge 35 ans</p>
+          <p class="chart-tooltip-value" id="chart-tooltip-worth">500 k€</p>
+        </div>
+      </section>
+
+      <section
+        class="premium-preview"
+        id="premium-preview"
+        aria-labelledby="premium-title"
+        data-basic-only
+      >
+        <div class="premium-preview-head">
+          <div>
+            <p class="premium-kicker" data-i18n="premium.kicker">Pour aller plus loin</p>
+            <h2 id="premium-title" data-i18n="premium.title">Analyses avancées</h2>
+          </div>
+        </div>
+
+        <div class="premium-grid">
+          <article class="premium-card">
+            <div class="premium-card-top">
+              <h3 data-i18n="tabs.reverse">Mode reverse</h3>
+              <span class="premium-pill" data-i18n="tabs.premium">Premium</span>
+            </div>
+            <p data-i18n="premium.items.reverse">
+              Déterminez le capital nécessaire pour atteindre un niveau de vie cible.
+            </p>
+          </article>
+
+          <article class="premium-card">
+            <div class="premium-card-top">
+              <h3 data-i18n="tabs.extraIncome">Avec revenus complémentaires</h3>
+              <span class="premium-pill" data-i18n="tabs.premium">Premium</span>
+            </div>
+            <p data-i18n="premium.items.extraIncome">
+              Intégrez loyers, pension, dividendes ou activité réduite.
+            </p>
+          </article>
+
+          <article class="premium-card">
+            <div class="premium-card-top">
+              <h3 data-i18n="tabs.ageSensitivity">Sensibilité à l'âge</h3>
+              <span class="premium-pill" data-i18n="tabs.premium">Premium</span>
+            </div>
+            <p data-i18n="premium.items.ageSensitivity">
+              Visualisez ce que changent quelques années de plus ou de moins.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./site-config.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
