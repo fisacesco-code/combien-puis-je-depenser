@@ -227,7 +227,7 @@ const translations = {
       eyebrow: "Financial Planning",
       title: "What if I stopped working today?",
       subtitle:
-        "Estimate how much you can spend each year until the end of your life, taking into account returns and inflation.",
+        "Estimate how much you can spend each month until the estimated end of your life, by spending down all your wealth and finishing with €0 in your account.",
       badges: {
         instant: "Instant access",
         nosignup: "No signup",
