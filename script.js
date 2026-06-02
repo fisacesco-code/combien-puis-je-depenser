@@ -6,7 +6,7 @@ const translations = {
       eyebrow: "Planification financière",
       title: "Et si j'arrêtais de travailler aujourd'hui ?",
       subtitle:
-        "Estimez le montant que vous pouvez dépenser chaque année jusqu'à la fin de votre vie, en tenant compte du rendement et de l'inflation.",
+        "Estimez le montant que vous pouvez dépenser chaque mois jusqu'à la fin estimée de votre vie, en dilapidant tout votre patrimoine, et en finissant avec 0€ sur votre compte.",
       badges: {
         instant: "Accès immédiat",
         nosignup: "Sans inscription",
