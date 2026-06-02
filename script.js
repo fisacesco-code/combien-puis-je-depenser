@@ -25,7 +25,7 @@ const translations = {
     fields: {
       currentAge: { label: "Âge actuel", suffix: "ans" },
       endAge: { label: "Âge de fin de vie estimé", suffix: "ans" },
-      netWorth: { label: "Patrimoine net actuel" },
+      netWorth: { label: "Patrimoine net actuel", help: "Valeur des biens - crédits en cours + épargne" },
       bequest: { label: "Capital à laisser aux héritiers", help: "Optionnel" },
       returnRate: { label: "Rendement annuel net du patrimoine" },
       inflation: { label: "Inflation annuelle moyenne" },
@@ -246,7 +246,7 @@ const translations = {
     fields: {
       currentAge: { label: "Current age", suffix: "years" },
       endAge: { label: "Estimated age at end of life", suffix: "years" },
-      netWorth: { label: "Current net worth" },
+      netWorth: { label: "Current net worth", help: "Property value - outstanding loans + savings" },
       bequest: { label: "Capital to leave to heirs", help: "Optional" },
       returnRate: { label: "Net annual portfolio return" },
       inflation: { label: "Average annual inflation" },
