@@ -614,14 +614,14 @@ input:focus-visible {
 
 .premium-tool-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 0.55fr) minmax(360px, 1.45fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
   align-items: stretch;
 }
 
 .premium-tool-grid .field,
 .premium-tool-grid .input-shell {
-  max-width: 360px;
+  max-width: none;
 }
 
 .premium-summary-card {
