@@ -624,6 +624,17 @@ input:focus-visible {
   max-width: none;
 }
 
+.premium-input-group {
+  display: grid;
+  gap: 18px;
+}
+
+.compact-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .premium-summary-card {
   display: flex;
   flex-direction: column;
@@ -687,6 +698,11 @@ input:focus-visible {
   font-size: clamp(2rem, 5vw, 3.2rem);
   line-height: 1;
   font-weight: 600;
+}
+
+.result-primary.is-negative,
+.result-secondary.is-negative {
+  color: var(--danger);
 }
 
 .result-unit {
@@ -1040,6 +1056,10 @@ input:focus-visible {
   .ideas-actions {
     flex-direction: column;
     align-items: start;
+  }
+
+  .compact-field-grid {
+    grid-template-columns: 1fr;
   }
 
   .promo-row {

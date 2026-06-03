@@ -27,12 +27,14 @@ const translations = {
       endAge: { label: "Âge de fin de vie estimé", suffix: "ans" },
       netWorth: { label: "Patrimoine net actuel", help: "Valeur des biens - crédits en cours + épargne" },
       bequest: { label: "Capital à laisser aux héritiers", help: "Optionnel" },
-      returnRate: { label: "Rendement annuel net du patrimoine" },
-      inflation: { label: "Inflation annuelle moyenne" },
+      returnRate: { label: "Rendement annuel net du patrimoine (net d'imp\u00f4ts)" },
+      inflation: { label: "Inflation annuelle moyenne", help: "2 % repr\u00e9sente la moyenne haute observ\u00e9e en France sur les 30 derni\u00e8res ann\u00e9es." },
     },
     results: {
       prefix: "Vous pouvez dépenser",
+      prefixNeed: "Vous devez vous enrichir de",
       perMonth: "par mois",
+      perMonthNeed: "tous les mois",
       perYear: "par an",
       overYears: "Sur {years} ans",
       realRate: "Taux réel {rate} %",
@@ -176,9 +178,13 @@ const translations = {
       title: "Avec revenus complémentaires",
       subtitle:
         "Ajoutez des revenus externes pour voir votre marge de dépense totale.",
-      input: "Revenus complémentaires mensuels",
+      input: "Revenus compl\u00e9mentaires mensuels (nets d'imp\u00f4ts)",
+      startAge: "\u00c2ge d\u00e9but",
+      endAge: "\u00c2ge fin",
+      windowHelp: "P\u00e9riode pendant laquelle vous percevez un revenu compl\u00e9mentaire.",
       output: "Dépense mensuelle totale possible",
       note: "{portfolio} via le patrimoine + {extra} de revenus complémentaires.",
+      noteWindow: "Le complément de revenus est pris en compte entre {startAge} et {endAge} ans.",
       chartTitle: "Évolution du patrimoine avec revenus complémentaires",
       chartNote:
         "Projection du patrimoine si une partie du niveau de vie est couverte par des revenus externes.",
@@ -192,17 +198,17 @@ const translations = {
       delta: "{delta} vs. {reference}",
     },
     ideas: {
-      kicker: "Vos idées",
-      title: "Suggérer un nouveau calcul",
+      kicker: "Nous écrire",
+      title: "Vos remarques / questions",
       subtitle:
-        "Dites-nous quelle analyse ou quel cas d'usage vous aimeriez voir ajouté.",
+        "Partagez vos remarques, vos questions ou les points qui vous semblent peu clairs.",
       name: "Votre nom",
       email: "Votre email",
-      message: "Votre suggestion",
-      cta: "Envoyer la suggestion",
+      message: "Votre message",
+      cta: "Envoyer le message",
       sentMailto:
         "Votre messagerie s'ouvre avec le message prérempli. Il ne reste plus qu'à l'envoyer.",
-      sentEndpoint: "Merci, votre suggestion a bien été envoyée.",
+      sentEndpoint: "Merci, votre message a bien été envoyé.",
       missingConfig:
         "Ajoutez une adresse email ou un endpoint de contact dans la configuration du site.",
       invalid:
@@ -248,12 +254,14 @@ const translations = {
       endAge: { label: "Estimated age at end of life", suffix: "years" },
       netWorth: { label: "Current net worth", help: "Property value - outstanding loans + savings" },
       bequest: { label: "Capital to leave to heirs", help: "Optional" },
-      returnRate: { label: "Net annual portfolio return" },
-      inflation: { label: "Average annual inflation" },
+      returnRate: { label: "Net annual portfolio return (after tax)" },
+      inflation: { label: "Average annual inflation", help: "2% is roughly the upper-end long-term average observed in France over the past 30 years." },
     },
     results: {
       prefix: "You can spend",
+      prefixNeed: "You need to grow your wealth by",
       perMonth: "per month",
+      perMonthNeed: "every month",
       perYear: "per year",
       overYears: "Over {years} years",
       realRate: "Real rate {rate}%",
@@ -383,9 +391,13 @@ const translations = {
       kicker: "Premium analysis",
       title: "With extra income",
       subtitle: "Add external income to see your total spending room.",
-      input: "Monthly extra income",
+      input: "Monthly extra income (after tax)",
+      startAge: "Start age",
+      endAge: "End age",
+      windowHelp: "Period during which you receive extra income.",
       output: "Total monthly spending available",
       note: "{portfolio} from the portfolio + {extra} from extra income.",
+      noteWindow: "Extra income is included between ages {startAge} and {endAge}.",
       chartTitle: "Net worth with extra income",
       chartNote:
         "Net worth projection if part of your lifestyle is covered by external income.",
@@ -398,17 +410,17 @@ const translations = {
       delta: "{delta} vs. {reference}",
     },
     ideas: {
-      kicker: "Your ideas",
-      title: "Suggest a new calculation",
+      kicker: "Contact us",
+      title: "Your feedback / questions",
       subtitle:
-        "Tell us which analysis or use case you would like to see added next.",
+        "Share your feedback, your questions, or anything that feels unclear.",
       name: "Your name",
       email: "Your email",
-      message: "Your suggestion",
-      cta: "Send suggestion",
+      message: "Your message",
+      cta: "Send message",
       sentMailto:
         "Your email client is opening with a prefilled draft. You only need to send it.",
-      sentEndpoint: "Thank you, your suggestion was sent.",
+      sentEndpoint: "Thank you, your message was sent.",
       missingConfig: "Add a contact email or contact endpoint in the site configuration.",
       invalid:
         "Please enter at least a message, and ideally your email so we can reply.",
@@ -457,6 +469,8 @@ const ui = {
   languageSwitch: document.getElementById("language-switch"),
   monthlyResult: document.getElementById("monthly-result"),
   annualResult: document.getElementById("annual-result"),
+  resultLabel: document.querySelector(".result-label"),
+  resultUnits: [...document.querySelectorAll(".result-unit")],
   resultMeta: document.getElementById("result-meta"),
   summaryYears: document.getElementById("summary-years"),
   summaryRealRate: document.getElementById("summary-real-rate"),
@@ -475,6 +489,8 @@ const ui = {
   promoSubmit: document.getElementById("promo-submit"),
   targetMonthly: document.getElementById("target-monthly"),
   extraIncome: document.getElementById("extra-income"),
+  incomeStartAge: document.getElementById("income-start-age"),
+  incomeEndAge: document.getElementById("income-end-age"),
   reverseRequiredCapital: document.getElementById("reverse-required-capital"),
   reverseSummaryNote: document.getElementById("reverse-summary-note"),
   reverseCurrentPatrimonyNote: document.getElementById("reverse-current-patrimony-note"),
@@ -577,6 +593,10 @@ function formatAmountInput(input, value) {
   }
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function readBaseValues() {
   return {
     currentAge: Number(fields.currentAge.value),
@@ -626,8 +646,6 @@ function validate(values) {
     errors.bequest = t("errors.required");
   } else if (values.bequest < 0) {
     errors.bequest = t("errors.positiveAmount");
-  } else if (Number.isFinite(values.netWorth) && values.bequest > values.netWorth) {
-    errors.bequest = t("errors.bequestTooHigh");
   }
 
   if (!Number.isFinite(values.returnRate) || values.returnRate < -20 || values.returnRate > 30) {
@@ -660,7 +678,7 @@ function calculatePlanner(values) {
       (distributableCapital * realRate) / (1 - Math.pow(1 + realRate, -years));
   }
 
-  if (!Number.isFinite(annualSpending) || annualSpending < 0) {
+  if (!Number.isFinite(annualSpending)) {
     return {
       years,
       realRate,
@@ -680,6 +698,111 @@ function calculatePlanner(values) {
   }
   points[points.length - 1].balance = values.bequest;
   return { years, realRate, bequest: values.bequest, annualSpending, monthlySpending, points };
+}
+
+function presentValueFactor(realRate, years, startOffset = 0, endOffset = years) {
+  let factor = 0;
+  for (let step = 1; step <= years; step += 1) {
+    const intervalStart = step - 1;
+    if (intervalStart < startOffset || intervalStart >= endOffset) {
+      continue;
+    }
+    factor += 1 / Math.pow(1 + realRate, step);
+  }
+  return factor;
+}
+
+function readIncomeWindow(values) {
+  const currentAge = values.currentAge;
+  const endAge = values.endAge;
+  const rawStart = Number(ui.incomeStartAge.value);
+  const rawEnd = Number(ui.incomeEndAge.value);
+  const startAge = Number.isFinite(rawStart) ? clamp(Math.round(rawStart), currentAge, endAge) : currentAge;
+  const endAgeWindow = Number.isFinite(rawEnd) ? clamp(Math.round(rawEnd), startAge, endAge) : endAge;
+  return {
+    startAge,
+    endAge: endAgeWindow,
+    isFullHorizon: startAge === currentAge && endAgeWindow === endAge,
+  };
+}
+
+function syncIncomeAgeInputs(values) {
+  const previousCurrentAge = lastValues?.currentAge;
+  const previousEndAge = lastValues?.endAge;
+  const currentRaw = Number(ui.incomeStartAge.value);
+  const endRaw = Number(ui.incomeEndAge.value);
+  const shouldFollowCurrent =
+    !Number.isFinite(currentRaw) ||
+    ui.incomeStartAge.value === "" ||
+    currentRaw === previousCurrentAge ||
+    currentRaw < values.currentAge ||
+    currentRaw > values.endAge;
+  const shouldFollowEnd =
+    !Number.isFinite(endRaw) ||
+    ui.incomeEndAge.value === "" ||
+    endRaw === previousEndAge ||
+    endRaw < values.currentAge ||
+    endRaw > values.endAge;
+
+  ui.incomeStartAge.min = String(values.currentAge);
+  ui.incomeStartAge.max = String(values.endAge);
+  ui.incomeEndAge.min = String(values.currentAge);
+  ui.incomeEndAge.max = String(values.endAge);
+
+  if (shouldFollowCurrent) {
+    ui.incomeStartAge.value = String(values.currentAge);
+  }
+  if (shouldFollowEnd) {
+    ui.incomeEndAge.value = String(values.endAge);
+  }
+
+  const normalized = readIncomeWindow(values);
+  ui.incomeStartAge.value = String(normalized.startAge);
+  ui.incomeEndAge.value = String(normalized.endAge);
+}
+
+function calculateIncomeScenario(values, extraIncomeMonthly) {
+  const years = values.endAge - values.currentAge;
+  const realRate = (1 + values.returnRate / 100) / (1 + values.inflationRate / 100) - 1;
+  const distributableCapital = values.netWorth - values.bequest / Math.pow(1 + realRate, years);
+  const fullFactor = presentValueFactor(realRate, years);
+  const incomeWindow = readIncomeWindow(values);
+  const startOffset = incomeWindow.startAge - values.currentAge;
+  const endOffset = incomeWindow.endAge - values.currentAge;
+  const incomeFactor = presentValueFactor(realRate, years, startOffset, endOffset);
+  const extraAnnual = Math.max(0, extraIncomeMonthly || 0) * 12;
+  const annualSpending = fullFactor > 0
+    ? (distributableCapital + extraAnnual * incomeFactor) / fullFactor
+    : Number.NaN;
+
+  if (!Number.isFinite(annualSpending) || annualSpending < 0) {
+    return {
+      annualSpending: Number.NaN,
+      monthlySpending: Number.NaN,
+      points: [],
+      incomeWindow,
+    };
+  }
+
+  let balance = values.netWorth;
+  const points = [{ age: values.currentAge, balance }];
+  for (let step = 1; step <= years; step += 1) {
+    const intervalStartAge = values.currentAge + step - 1;
+    const extraAnnualThisStep =
+      intervalStartAge >= incomeWindow.startAge && intervalStartAge < incomeWindow.endAge
+        ? extraAnnual
+        : 0;
+    balance = balance * (1 + realRate) - (annualSpending - extraAnnualThisStep);
+    points.push({ age: values.currentAge + step, balance: Math.max(balance, values.bequest) });
+  }
+  points[points.length - 1].balance = values.bequest;
+
+  return {
+    annualSpending,
+    monthlySpending: annualSpending / 12,
+    points,
+    incomeWindow,
+  };
 }
 
 function buildProjectionPoints({ startAge, endAge, startingBalance, annualWithdrawal, realRate, floorBalance = 0 }) {
@@ -894,6 +1017,44 @@ function renderChart(calculation, currentAge, endAge) {
   });
 }
 
+function renderResults(calculation) {
+  if (!Number.isFinite(calculation.annualSpending)) {
+    ui.resultLabel.textContent = t("results.prefix");
+    ui.resultUnits[0].textContent = t("results.perMonth");
+    ui.resultUnits[1].textContent = t("results.perYear");
+    ui.monthlyResult.classList.remove("is-negative");
+    ui.annualResult.classList.remove("is-negative");
+    ui.monthlyResult.textContent = "—";
+    ui.annualResult.textContent = "—";
+    ui.resultMeta.textContent = t("errors.impossible");
+    ui.summaryYears.textContent = "—";
+    ui.summaryRealRate.textContent = "—";
+    ui.summaryBequest.textContent = "—";
+    return;
+  }
+
+  const money = getCurrencyFormatter();
+  const isNegative = calculation.monthlySpending < 0;
+  ui.resultLabel.textContent = t(isNegative ? "results.prefixNeed" : "results.prefix");
+  ui.resultUnits[0].textContent = t(isNegative ? "results.perMonthNeed" : "results.perMonth");
+  ui.resultUnits[1].textContent = t("results.perYear");
+  ui.monthlyResult.classList.toggle("is-negative", isNegative);
+  ui.annualResult.classList.toggle("is-negative", isNegative);
+  ui.monthlyResult.textContent = money.format(Math.abs(calculation.monthlySpending));
+  ui.annualResult.textContent = money.format(Math.abs(calculation.annualSpending));
+  ui.summaryYears.textContent = t("results.summaryYears", { years: calculation.years });
+  ui.summaryRealRate.textContent = t("results.realRate", {
+    rate: getDecimalFormatter(2).format(calculation.realRate * 100),
+  });
+  ui.summaryBequest.textContent = t("results.summaryBequest", {
+    amount: money.format(calculation.bequest),
+  });
+  ui.resultMeta.textContent = `${t("results.overYears", { years: calculation.years })} · ${t(
+    "results.realRate",
+    { rate: getDecimalFormatter(2).format(calculation.realRate * 100) },
+  )}`;
+}
+
 function buildScenarioScale({ min, max, step, majorEvery, labelFormatter }) {
   const marks = [];
   const span = max - min;
@@ -1074,13 +1235,20 @@ function renderPremiumPanels(values, calculation) {
   });
 
   const extraIncome = parseAmount(ui.extraIncome.value || "0");
-  const totalMonthly = calculation.monthlySpending + (Number.isFinite(extraIncome) ? extraIncome : 0);
-  ui.incomeTotalMonthly.textContent = money.format(totalMonthly);
-  ui.incomeSummaryNote.textContent = t("income.note", {
-    portfolio: money.format(calculation.monthlySpending),
-    extra: money.format(extraIncome || 0),
-  });
-  const incomePoints = calculation.points;
+  const incomeScenario = calculateIncomeScenario(values, Number.isFinite(extraIncome) ? extraIncome : 0);
+  ui.incomeTotalMonthly.textContent = Number.isFinite(incomeScenario.monthlySpending)
+    ? money.format(incomeScenario.monthlySpending)
+    : "â€”";
+  ui.incomeSummaryNote.textContent = incomeScenario.incomeWindow.isFullHorizon
+    ? t("income.note", {
+        portfolio: money.format(calculation.monthlySpending),
+        extra: money.format(extraIncome || 0),
+      })
+    : t("income.noteWindow", {
+        startAge: incomeScenario.incomeWindow.startAge,
+        endAge: incomeScenario.incomeWindow.endAge,
+      });
+  const incomePoints = incomeScenario.points;
   renderInteractiveChart({
     svg: ui.incomeChart,
     tooltip: ui.incomeChartTooltip,
@@ -1166,6 +1334,7 @@ function persistPremiumAccess() {
 function refresh() {
   clearErrors();
   const values = readBaseValues();
+  syncIncomeAgeInputs(values);
   const errors = validate(values);
   if (Object.keys(errors).length) {
     Object.entries(errors).forEach(([fieldName, message]) => setError(fieldName, message));
@@ -1279,8 +1448,8 @@ async function handleIdeasSubmit(event) {
   if (config.contactEmail) {
     const subject =
       state.locale === "fr"
-        ? "Suggestion de nouveau calcul"
-        : "Suggestion for a new calculation";
+        ? "Remarques / questions sur l'outil"
+        : "Feedback / questions about the tool";
     const body = [
       name ? `${state.locale === "fr" ? "Nom" : "Name"}: ${name}` : "",
       `${state.locale === "fr" ? "Email" : "Email"}: ${email}`,
@@ -1335,6 +1504,11 @@ Object.values(fields).forEach((input) => {
     }
     refresh();
   });
+});
+
+[ui.incomeStartAge, ui.incomeEndAge].forEach((input) => {
+  input.addEventListener("change", refresh);
+  input.addEventListener("blur", refresh);
 });
 
 ui.unlockCta?.addEventListener("click", openPricingSection);
