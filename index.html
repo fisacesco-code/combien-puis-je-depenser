@@ -37,11 +37,6 @@
           de votre vie, en tenant compte du rendement et de l'inflation.
         </p>
 
-        <div class="hero-meta">
-          <span class="hero-badge" data-i18n="hero.badges.instant">Accès immédiat</span>
-          <span class="hero-badge" data-i18n="hero.badges.nosignup">Sans inscription</span>
-        </div>
-
         <div class="tabs" role="tablist" aria-label="Modes de calcul">
           <button
             class="tab-button is-active"
@@ -56,23 +51,11 @@
           <button
             class="tab-button"
             type="button"
-            id="tab-scenarios"
-            data-tab="scenarios"
-            role="tab"
-            aria-selected="false"
-          >
-            <span data-i18n="tabs.scenarios">Scénarios</span>
-            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
-          </button>
-          <button
-            class="tab-button"
-            type="button"
             data-tab="reverse"
             role="tab"
             aria-selected="false"
           >
             <span data-i18n="tabs.reverse">Mode reverse</span>
-            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
           </button>
           <button
             class="tab-button"
@@ -82,7 +65,6 @@
             aria-selected="false"
           >
             <span data-i18n="tabs.extraIncome">Avec revenus complémentaires</span>
-            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
           </button>
           <button
             class="tab-button"
@@ -92,7 +74,16 @@
             aria-selected="false"
           >
             <span data-i18n="tabs.ageSensitivity">Sensibilité à l'âge</span>
-            <span class="tab-lock-icon" aria-hidden="true">🔒</span>
+          </button>
+          <button
+            class="tab-button"
+            type="button"
+            id="tab-scenarios"
+            data-tab="scenarios"
+            role="tab"
+            aria-selected="false"
+          >
+            <span data-i18n="tabs.scenarios">Scénarios</span>
           </button>
           <button
             class="tab-button"
@@ -216,7 +207,7 @@
               <label for="inflation-rate" data-i18n="fields.inflation.label"
                 >Inflation annuelle moyenne</label
               >
-              <div class="input-shell">
+              <div class="input-shell input-shell-disabled">
                 <input
                   id="inflation-rate"
                   name="inflationRate"
@@ -226,10 +217,14 @@
                   max="20"
                   step="0.1"
                   value="2"
-                  aria-describedby="inflation-rate-error"
+                  aria-describedby="inflation-help inflation-rate-error"
+                  disabled
                 />
                 <span class="input-suffix">%</span>
               </div>
+              <p class="field-help" id="inflation-help" data-i18n="fields.inflation.help">
+                2 % repr&eacute;sente la moyenne haute observ&eacute;e en France sur les 30 derni&egrave;res ann&eacute;es.
+              </p>
               <p class="error-message" id="inflation-rate-error"></p>
             </div>
           </div>
@@ -353,7 +348,6 @@
       <section class="panel panel-premium hidden" data-panel="scenarios">
         <div class="panel-head">
           <div>
-            <p class="panel-kicker" data-i18n="scenario.kicker">Analyse premium</p>
             <h2 data-i18n="scenario.title">Scénarios</h2>
             <p data-i18n="scenario.subtitle">
               Comparez l'impact d'une inflation plus forte ou d'une espérance de
@@ -367,7 +361,6 @@
       <section class="panel panel-premium hidden" data-panel="reverse">
         <div class="panel-head">
           <div>
-            <p class="panel-kicker" data-i18n="reverse.kicker">Analyse premium</p>
             <h2 data-i18n="reverse.title">Mode reverse</h2>
             <p data-i18n="reverse.subtitle">
               Partez d'un niveau de dépense mensuel cible pour estimer le
@@ -414,7 +407,6 @@
       <section class="panel panel-premium hidden" data-panel="income">
         <div class="panel-head">
           <div>
-            <p class="panel-kicker" data-i18n="income.kicker">Analyse premium</p>
             <h2 data-i18n="income.title">Avec revenus complémentaires</h2>
             <p data-i18n="income.subtitle">
               Ajoutez des revenus externes pour voir votre marge de dépense totale.
@@ -422,12 +414,33 @@
           </div>
         </div>
         <div class="premium-tool-grid">
-          <div class="field">
-            <label for="extra-income" data-i18n="income.input">Revenus complémentaires mensuels</label>
-            <div class="input-shell">
-              <input id="extra-income" type="text" inputmode="numeric" value="500" />
-              <span class="input-suffix">€</span>
+          <div class="premium-input-group">
+            <div class="field">
+              <label for="extra-income" data-i18n="income.input">Revenus compl&eacute;mentaires mensuels (nets d'imp&ocirc;ts)</label>
+              <div class="input-shell">
+                <input id="extra-income" type="text" inputmode="numeric" value="500" />
+                <span class="input-suffix">€</span>
+              </div>
             </div>
+            <div class="compact-field-grid">
+              <div class="field">
+                <label for="income-start-age" data-i18n="income.startAge">&Acirc;ge d&eacute;but</label>
+                <div class="input-shell">
+                  <input id="income-start-age" type="number" inputmode="numeric" min="18" max="120" step="1" value="35" />
+                  <span class="input-suffix" data-i18n="fields.currentAge.suffix">ans</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="income-end-age" data-i18n="income.endAge">&Acirc;ge fin</label>
+                <div class="input-shell">
+                  <input id="income-end-age" type="number" inputmode="numeric" min="19" max="120" step="1" value="90" />
+                  <span class="input-suffix" data-i18n="fields.endAge.suffix">ans</span>
+                </div>
+              </div>
+            </div>
+            <p class="field-help" id="income-window-help" data-i18n="income.windowHelp">
+              P&eacute;riode pendant laquelle vous percevez un revenu compl&eacute;mentaire.
+            </p>
           </div>
           <div class="premium-summary-card">
             <p class="premium-summary-label" data-i18n="income.output">Dépense mensuelle totale possible</p>
@@ -459,7 +472,6 @@
       <section class="panel panel-premium hidden" data-panel="sensitivity">
         <div class="panel-head">
           <div>
-            <p class="panel-kicker" data-i18n="sensitivity.kicker">Analyse premium</p>
             <h2 data-i18n="sensitivity.title">Sensibilité à l'âge</h2>
             <p data-i18n="sensitivity.subtitle">
               Visualisez rapidement l'effet d'un horizon de vie plus court ou plus long.
