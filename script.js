@@ -449,6 +449,8 @@ const config = {
   ...(window.SITE_CONFIG || {}),
 };
 
+document.getElementById("premium-preview")?.remove();
+
 const premiumTabs = ["scenarios", "reverse", "income", "sensitivity"];
 
 const state = {
@@ -569,6 +571,66 @@ function getDecimalFormatter(digits = 2) {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
+}
+
+function getNiceStep(roughStep) {
+  const safeStep = Math.max(roughStep, 1);
+  const exponent = Math.floor(Math.log10(safeStep));
+  const magnitude = 10 ** exponent;
+  const fraction = safeStep / magnitude;
+
+  if (fraction <= 1) {
+    return magnitude;
+  }
+  if (fraction <= 2) {
+    return 2 * magnitude;
+  }
+  if (fraction <= 5) {
+    return 5 * magnitude;
+  }
+  return 10 * magnitude;
+}
+
+function getChartYAxis(points) {
+  const balances = points.map((point) => point.balance).filter((value) => Number.isFinite(value));
+  if (!balances.length) {
+    return { min: 0, max: 1, ticks: [0, 0.25, 0.5, 0.75, 1] };
+  }
+
+  let minBalance = Math.min(...balances);
+  let maxBalance = Math.max(...balances);
+
+  if (minBalance === maxBalance) {
+    const padding = Math.max(Math.abs(minBalance) * 0.1, 1);
+    minBalance -= padding;
+    maxBalance += padding;
+  }
+
+  const step = getNiceStep((maxBalance - minBalance) / 4);
+  let axisMin = Math.floor(minBalance / step) * step;
+  let axisMax = Math.ceil(maxBalance / step) * step;
+  let tickCount = Math.round((axisMax - axisMin) / step) + 1;
+  const lowerPadding = minBalance - axisMin;
+  const upperPadding = axisMax - maxBalance;
+
+  if (tickCount < 5) {
+    if (lowerPadding >= upperPadding && axisMin - step >= 0) {
+      axisMin -= step;
+    } else {
+      axisMax += step;
+    }
+    tickCount = Math.round((axisMax - axisMin) / step) + 1;
+  }
+
+  const ticks = Array.from({ length: tickCount }, (_, index) =>
+    Number((axisMin + index * step).toFixed(10)),
+  );
+
+  return {
+    min: axisMin,
+    max: axisMax,
+    ticks,
+  };
 }
 
 function normalizeAmount(rawValue) {
@@ -694,7 +756,7 @@ function calculatePlanner(values) {
   const points = [{ age: values.currentAge, balance }];
   for (let step = 1; step <= years; step += 1) {
     balance = balance * (1 + realRate) - annualSpending;
-    points.push({ age: values.currentAge + step, balance: Math.max(balance, values.bequest) });
+    points.push({ age: values.currentAge + step, balance });
   }
   points[points.length - 1].balance = values.bequest;
   return { years, realRate, bequest: values.bequest, annualSpending, monthlySpending, points };
@@ -793,7 +855,7 @@ function calculateIncomeScenario(values, extraIncomeMonthly) {
         ? extraAnnual
         : 0;
     balance = balance * (1 + realRate) - (annualSpending - extraAnnualThisStep);
-    points.push({ age: values.currentAge + step, balance: Math.max(balance, values.bequest) });
+    points.push({ age: values.currentAge + step, balance });
   }
   points[points.length - 1].balance = values.bequest;
 
@@ -811,10 +873,10 @@ function buildProjectionPoints({ startAge, endAge, startingBalance, annualWithdr
   const points = [{ age: startAge, balance }];
   for (let step = 1; step <= years; step += 1) {
     balance = balance * (1 + realRate) - annualWithdrawal;
-    points.push({ age: startAge + step, balance: Math.max(balance, floorBalance) });
+    points.push({ age: startAge + step, balance });
   }
   if (points.length) {
-    points[points.length - 1].balance = Math.max(points[points.length - 1].balance, floorBalance);
+    points[points.length - 1].balance = floorBalance;
   }
   return points;
 }
@@ -887,11 +949,11 @@ function renderInteractiveChart({
           { age: currentAge, balance: 0 },
           { age: endAge, balance: 0 },
         ];
-  const maxBalance = Math.max(...safePoints.map((point) => point.balance), 1);
+  const yAxis = getChartYAxis(safePoints);
   const x = (age) => margin.left + ((age - currentAge) / Math.max(endAge - currentAge, 1)) * chartWidth;
-  const y = (balance) => margin.top + chartHeight - (balance / maxBalance) * chartHeight;
-  const gridLines = Array.from({ length: 5 }, (_, index) => {
-    const value = (maxBalance / 4) * index;
+  const y = (balance) =>
+    margin.top + chartHeight - ((balance - yAxis.min) / Math.max(yAxis.max - yAxis.min, 1)) * chartHeight;
+  const gridLines = yAxis.ticks.map((value) => {
     const gridY = y(value);
     return `
       <line x1="${margin.left}" y1="${gridY}" x2="${width - margin.right}" y2="${gridY}" stroke="#edf0f5" stroke-dasharray="2 8" />
