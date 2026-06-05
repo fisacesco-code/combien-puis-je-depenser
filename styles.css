@@ -1018,6 +1018,91 @@ input:focus-visible {
   gap: 16px;
 }
 
+.consent-banner {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  display: grid;
+  gap: 16px;
+  width: calc(100vw - 40px);
+  max-width: 420px;
+  padding: 18px;
+  border: 1px solid #e6e8ef;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 42px rgba(17, 27, 54, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.consent-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.consent-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.consent-text {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.consent-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.consent-button,
+.consent-manage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.consent-button:hover,
+.consent-manage:hover {
+  transform: translateY(-1px);
+}
+
+.consent-button-secondary {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+}
+
+.consent-button-primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.consent-manage {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 35;
+  width: auto;
+  max-width: 420px;
+  border: 1px solid #e6e8ef;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--text);
+  box-shadow: 0 12px 28px rgba(17, 27, 54, 0.14);
+}
+
 .page-fade {
   animation: page-fade 220ms ease;
 }
@@ -1074,6 +1159,33 @@ input:focus-visible {
   .ideas-actions {
     flex-direction: column;
     align-items: start;
+  }
+
+  .consent-banner {
+    left: 50%;
+    right: auto;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    max-width: 520px;
+    transform: translateX(-50%);
+  }
+
+  .consent-button,
+  .consent-manage {
+    width: 100%;
+  }
+
+  .consent-manage {
+    left: 50%;
+    right: auto;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    max-width: 520px;
+    transform: translateX(-50%);
+  }
+
+  .consent-manage:hover {
+    transform: translateX(-50%) translateY(-1px);
   }
 
   .compact-field-grid {
