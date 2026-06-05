@@ -2,8 +2,9 @@ window.SITE_CONFIG = {
   paymentsEnabled: false,
   betaFreeAccess: true,
   promoCode: "GRATUIT",
-  contactEmail: "fisacesco@gmail.com",
-  contactEndpoint: "",
+  analyticsMeasurementId: "G-1TF5X7Z446",
+  contactEmail: "",
+  contactEndpoint: "https://formspree.io/f/xpqeqqer",
   paymentLinks: {
     light: "",
     standard: "",

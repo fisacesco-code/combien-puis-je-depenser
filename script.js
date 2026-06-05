@@ -1675,7 +1675,10 @@ async function handleIdeasSubmit(event) {
     try {
       const response = await fetch(config.contactEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({ name, email, message }),
       });
       if (!response.ok) {
