@@ -1018,6 +1018,34 @@ input:focus-visible {
   gap: 16px;
 }
 
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 26px 4px 12px;
+  color: var(--muted);
+}
+
+.footer-link,
+.consent-link,
+.legal-back {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-link:hover,
+.consent-link:hover,
+.legal-back:hover {
+  text-decoration: underline;
+}
+
+.footer-note {
+  margin: 0;
+  color: var(--muted);
+}
+
 .consent-banner {
   position: fixed;
   right: 20px;
@@ -1051,6 +1079,11 @@ input:focus-visible {
   margin: 0;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.consent-link {
+  width: fit-content;
+  color: var(--muted);
 }
 
 .consent-actions {
@@ -1101,6 +1134,62 @@ input:focus-visible {
   background: rgba(255, 255, 255, 0.96);
   color: var(--text);
   box-shadow: 0 12px 28px rgba(17, 27, 54, 0.14);
+}
+
+.legal-shell {
+  width: min(820px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 40px 0 72px;
+}
+
+.legal-header {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.legal-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.06;
+}
+
+.legal-intro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+.legal-card {
+  margin-bottom: 18px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.legal-card h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.legal-card p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.legal-card p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-list {
+  margin: 0 0 12px 20px;
+  padding: 0;
+  color: var(--muted);
+  line-height: 1.65;
 }
 
 .page-fade {
@@ -1161,6 +1250,11 @@ input:focus-visible {
     align-items: start;
   }
 
+  .site-footer {
+    flex-direction: column;
+    align-items: start;
+  }
+
   .consent-banner {
     left: 50%;
     right: auto;
@@ -1190,6 +1284,15 @@ input:focus-visible {
 
   .compact-field-grid {
     grid-template-columns: 1fr;
+  }
+
+  .legal-shell {
+    width: min(100vw - 20px, 820px);
+    padding-top: 28px;
+  }
+
+  .legal-card {
+    padding: 20px 18px;
   }
 
   .promo-row {

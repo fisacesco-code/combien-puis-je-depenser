@@ -221,6 +221,11 @@ const translations = {
       accept: "Accepter",
       deny: "Refuser",
       manage: "G\u00e9rer les cookies",
+      learnMore: "En savoir plus",
+    },
+    footer: {
+      privacy: "Confidentialit\u00e9 et cookies",
+      note: "Outil d'estimation, sans conseil financier personnalis\u00e9.",
     },
     errors: {
       required: "Merci de renseigner ce champ.",
@@ -440,6 +445,11 @@ const translations = {
       accept: "Accept",
       deny: "Decline",
       manage: "Manage cookies",
+      learnMore: "Learn more",
+    },
+    footer: {
+      privacy: "Privacy and cookies",
+      note: "Estimation tool only, with no personalized financial advice.",
     },
     errors: {
       required: "Please complete this field.",
