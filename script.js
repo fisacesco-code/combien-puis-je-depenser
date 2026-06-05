@@ -1138,6 +1138,54 @@ function buildScenarioScale({ min, max, step, majorEvery, labelFormatter }) {
   return `<div class="scenario-scale" aria-hidden="true">${marks.join("")}</div>`;
 }
 
+function getScenarioCardCopy(index, value) {
+  const isEnglish = state.locale === "en";
+  const signedValue = `${value >= 0 ? "+" : ""}${getDecimalFormatter(1).format(value)}`;
+  const pointWord = Math.abs(value) <= 1.5 ? "point" : "points";
+
+  if (index === 0) {
+    return isEnglish
+      ? {
+          title: `Inflation ${signedValue} ${pointWord}`,
+          description: `Same lifespan, inflation adjusted by ${signedValue} ${pointWord}.`,
+        }
+      : {
+          title: `Inflation ${signedValue} ${pointWord}`,
+          description: `Même horizon de vie, inflation ajustée de ${signedValue} ${pointWord}.`,
+        };
+  }
+
+  if (index === 1) {
+    return isEnglish
+      ? {
+          title: `Return ${signedValue} ${pointWord}`,
+          description: `Same lifespan, net portfolio return adjusted by ${signedValue} ${pointWord}.`,
+        }
+      : {
+          title: `Rendement ${signedValue} ${pointWord}`,
+          description: `Même horizon de vie, rendement annuel net du patrimoine ajusté de ${signedValue} ${pointWord}.`,
+        };
+  }
+
+  const roundedYears = Math.round(value);
+  const signedYears = `${roundedYears >= 0 ? "+" : ""}${roundedYears}`;
+  const yearWord = isEnglish
+    ? (Math.abs(roundedYears) <= 1 ? "year" : "years")
+    : Math.abs(roundedYears) <= 1
+      ? "an"
+      : "ans";
+
+  return isEnglish
+    ? {
+        title: `${signedYears} ${yearWord}`,
+        description: `Same inflation, lifespan adjusted by ${signedYears} ${yearWord}.`,
+      }
+    : {
+        title: `${signedYears} ${yearWord}`,
+        description: `Même inflation, horizon de vie ajusté de ${signedYears} ${yearWord}.`,
+      };
+}
+
 function buildScenarioCard(index, baseValues, baseCalculation) {
   const adjustments = [
     { inflationOffset: state.scenarioControls.inflationOffset, returnOffset: 0, endAgeOffset: 0 },
@@ -1164,6 +1212,7 @@ function buildScenarioCard(index, baseValues, baseCalculation) {
   let controlKey = "";
   let scaleFormatter = (markValue) => String(markValue);
   let majorEvery = 1;
+  let cardCopy = getScenarioCardCopy(index, value);
 
   if (index === 0) {
     controlKey = "inflationOffset";
@@ -1196,6 +1245,7 @@ function buildScenarioCard(index, baseValues, baseCalculation) {
     scaleFormatter = (markValue) => `${Math.round(markValue)}`;
     majorEvery = 5;
   }
+  cardCopy = getScenarioCardCopy(index, value);
 
   card.innerHTML = `
     <div class="scenario-control">
@@ -1214,8 +1264,8 @@ function buildScenarioCard(index, baseValues, baseCalculation) {
         })}
       </div>
     </div>
-    <h3>${translations[state.locale].scenario.cards[index].title}</h3>
-    <p>${translations[state.locale].scenario.cards[index].description}</p>
+    <h3>${cardCopy.title}</h3>
+    <p>${cardCopy.description}</p>
     <p class="scenario-value">${Number.isFinite(calculation.monthlySpending) ? money.format(calculation.monthlySpending) : "—"}</p>
     <p>${t("scenario.monthly")}</p>
     <p class="scenario-delta ${diff < 0 ? "is-negative" : "is-positive"}">${t("scenario.delta", {
@@ -1257,6 +1307,26 @@ function renderPremiumPanels(values, calculation) {
 
   ui.scenarioGrid.innerHTML = "";
   [0, 1, 2].forEach((index) => ui.scenarioGrid.appendChild(buildScenarioCard(index, values, calculation)));
+  ui.scenarioGrid.querySelectorAll(".scenario-card").forEach((card) => {
+    const valueEl = card.querySelector(".scenario-value");
+    const deltaEl = card.querySelector(".scenario-delta");
+    if (!valueEl || !deltaEl) {
+      return;
+    }
+    const unitEl = deltaEl.previousElementSibling;
+    if (!unitEl || unitEl === valueEl || unitEl.classList.contains("scenario-result-row")) {
+      return;
+    }
+    const row = document.createElement("div");
+    row.className = "scenario-result-row";
+    const movedValue = valueEl.cloneNode(true);
+    const movedUnit = unitEl.cloneNode(true);
+    movedUnit.className = "scenario-unit";
+    row.appendChild(movedValue);
+    row.appendChild(movedUnit);
+    valueEl.replaceWith(row);
+    unitEl.remove();
+  });
 
   const money = getCurrencyFormatter();
   const targetMonthly = parseAmount(ui.targetMonthly.value || "0");

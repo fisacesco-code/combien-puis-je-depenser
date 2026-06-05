@@ -829,6 +829,8 @@ input:focus-visible {
 }
 
 .scenario-card {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
@@ -931,10 +933,26 @@ input:focus-visible {
 }
 
 .scenario-value {
-  margin: 16px 0 4px;
+  margin: 0;
   color: var(--accent);
   font-size: 2rem;
   font-weight: 600;
+}
+
+.scenario-result-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.scenario-unit {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .scenario-delta {
