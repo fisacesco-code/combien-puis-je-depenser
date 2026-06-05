@@ -1375,7 +1375,16 @@ function buildScenarioCard(index, baseValues, baseCalculation) {
     controlKey = "extraYears";
     controlLabel = t("scenario.sliderLabelYears");
     value = state.scenarioControls.extraYears;
-    controlValue = `${Math.round(value)} ${t("fields.endAge.suffix")}`;
+    const roundedYears = Math.round(value);
+    const yearSuffix =
+      state.locale === "en"
+        ? Math.abs(roundedYears) <= 1
+          ? "year"
+          : "years"
+        : Math.abs(roundedYears) <= 1
+          ? "an"
+          : "ans";
+    controlValue = `${roundedYears} ${yearSuffix}`;
     min = -10;
     max = 15;
     step = 1;
