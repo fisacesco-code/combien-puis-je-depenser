@@ -621,6 +621,33 @@ function clearAnalyticsCookies() {
   });
 }
 
+function disableAnalyticsRuntime() {
+  const measurementId = analyticsMeasurementId();
+  if (measurementId) {
+    window[`ga-disable-${measurementId}`] = true;
+  }
+
+  if (typeof window.gtag === "function") {
+    try {
+      window.gtag("consent", "update", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    } catch (_error) {
+      // Ignore runtime failures while shutting analytics down.
+    }
+  }
+
+  const analyticsScript = document.querySelector(`script[data-ga-measurement-id="${measurementId}"]`);
+  analyticsScript?.remove();
+  window.dataLayer = [];
+  window.gtag = function gtag() {};
+  state.analyticsLoaded = false;
+  clearAnalyticsCookies();
+}
+
 function loadAnalytics() {
   const measurementId = analyticsMeasurementId();
   if (!measurementId || state.analyticsLoaded) {
@@ -657,29 +684,22 @@ function updateConsentUI() {
 }
 
 function setAnalyticsConsent(status) {
+  const wasGranted = state.analyticsConsent === "granted" || state.analyticsLoaded;
   state.analyticsConsent = status;
   state.consentBannerOpen = false;
   localStorage.setItem("planner-analytics-consent", status);
 
-  const measurementId = analyticsMeasurementId();
   if (status === "granted") {
     loadAnalytics();
   } else {
-    if (measurementId) {
-      window[`ga-disable-${measurementId}`] = true;
-    }
-    if (typeof window.gtag === "function") {
-      window.gtag("consent", "update", {
-        analytics_storage: "denied",
-        ad_storage: "denied",
-        ad_user_data: "denied",
-        ad_personalization: "denied",
-      });
-    }
-    clearAnalyticsCookies();
+    disableAnalyticsRuntime();
   }
 
   updateConsentUI();
+
+  if (status === "denied" && wasGranted) {
+    window.setTimeout(() => window.location.reload(), 120);
+  }
 }
 
 function getNiceStep(roughStep) {
