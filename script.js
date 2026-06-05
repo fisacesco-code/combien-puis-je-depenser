@@ -653,7 +653,7 @@ function disableAnalyticsRuntime() {
   const analyticsScript = document.querySelector(`script[data-ga-measurement-id="${measurementId}"]`);
   analyticsScript?.remove();
   window.dataLayer = [];
-  window.gtag = function gtag() {};
+  delete window.gtag;
   state.analyticsLoaded = false;
   clearAnalyticsCookies();
 }
@@ -666,11 +666,9 @@ function loadAnalytics() {
 
   window[`ga-disable-${measurementId}`] = false;
   window.dataLayer = window.dataLayer || [];
-  window.gtag =
-    window.gtag ||
-    function gtag() {
-      window.dataLayer.push(arguments);
-    };
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
 
   const existingScript = document.querySelector(`script[data-ga-measurement-id="${measurementId}"]`);
   if (!existingScript) {
