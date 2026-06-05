@@ -15,13 +15,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1TF5X7Z446"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-1TF5X7Z446');
-    </script>
   </head>
   <body>
     <main class="app-shell">
@@ -617,6 +610,27 @@
         </div>
       </section>
     </main>
+
+    <aside class="consent-banner hidden" id="consent-banner" aria-live="polite">
+      <div class="consent-copy">
+        <p class="consent-title" data-i18n="consent.title">Statistiques de visite</p>
+        <p class="consent-text" data-i18n="consent.copy">
+          Nous utilisons Google Analytics pour comprendre l'usage du site et l&apos;am&eacute;liorer. Vous pouvez accepter ou refuser ces statistiques.
+        </p>
+      </div>
+      <div class="consent-actions">
+        <button class="consent-button consent-button-secondary" id="consent-deny" type="button" data-i18n="consent.deny">
+          Refuser
+        </button>
+        <button class="consent-button consent-button-primary" id="consent-accept" type="button" data-i18n="consent.accept">
+          Accepter
+        </button>
+      </div>
+    </aside>
+
+    <button class="consent-manage hidden" id="consent-manage" type="button" data-i18n="consent.manage">
+      G&eacute;rer les cookies
+    </button>
 
     <script src="./site-config.js"></script>
     <script src="./script.js"></script>

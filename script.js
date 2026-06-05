@@ -214,6 +214,14 @@ const translations = {
       invalid:
         "Merci de renseigner au moins un message, et idéalement votre email pour que l'on puisse vous répondre.",
     },
+    consent: {
+      title: "Statistiques de visite",
+      copy:
+        "Nous utilisons Google Analytics pour comprendre l'usage du site et l'am\u00e9liorer. Vous pouvez accepter ou refuser ces statistiques.",
+      accept: "Accepter",
+      deny: "Refuser",
+      manage: "G\u00e9rer les cookies",
+    },
     errors: {
       required: "Merci de renseigner ce champ.",
       ageRange: "Entrez un âge compris entre {min} et {max} ans.",
@@ -425,6 +433,14 @@ const translations = {
       invalid:
         "Please enter at least a message, and ideally your email so we can reply.",
     },
+    consent: {
+      title: "Visitor analytics",
+      copy:
+        "We use Google Analytics to understand how the site is used and improve it. You can accept or refuse these analytics cookies.",
+      accept: "Accept",
+      deny: "Decline",
+      manage: "Manage cookies",
+    },
     errors: {
       required: "Please complete this field.",
       ageRange: "Enter an age between {min} and {max} years.",
@@ -443,6 +459,7 @@ const config = {
   paymentsEnabled: false,
   betaFreeAccess: true,
   promoCode: "GRATUIT",
+  analyticsMeasurementId: "",
   paymentLinks: { light: "", standard: "", generous: "" },
   contactEmail: "",
   contactEndpoint: "",
@@ -456,6 +473,9 @@ const premiumTabs = ["scenarios", "reverse", "income", "sensitivity"];
 const state = {
   locale: localStorage.getItem("planner-locale") || "fr",
   activeTab: "basic",
+  analyticsConsent: localStorage.getItem("planner-analytics-consent") || "pending",
+  consentBannerOpen: !localStorage.getItem("planner-analytics-consent"),
+  analyticsLoaded: false,
   premiumUnlocked:
     localStorage.getItem("planner-premium-unlocked") === "true" ||
     config.betaFreeAccess ||
@@ -511,6 +531,10 @@ const ui = {
   ideasEmail: document.getElementById("idea-email"),
   ideasMessage: document.getElementById("idea-message"),
   ideasStatus: document.getElementById("ideas-status"),
+  consentBanner: document.getElementById("consent-banner"),
+  consentAccept: document.getElementById("consent-accept"),
+  consentDeny: document.getElementById("consent-deny"),
+  consentManage: document.getElementById("consent-manage"),
   panels: [...document.querySelectorAll("[data-panel]")],
   basicOnlyPanels: [...document.querySelectorAll("[data-basic-only]")],
   tabButtons: [...document.querySelectorAll(".tab-button[data-tab]")],
@@ -571,6 +595,91 @@ function getDecimalFormatter(digits = 2) {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
+}
+
+function analyticsMeasurementId() {
+  return String(config.analyticsMeasurementId || "").trim();
+}
+
+function clearAnalyticsCookies() {
+  const cookieNames = document.cookie
+    .split(";")
+    .map((part) => part.trim().split("=")[0])
+    .filter((name) => name && (name === "_ga" || name.startsWith("_ga_") || name === "_gid" || name === "_gat"));
+
+  const host = window.location.hostname;
+  const domainVariants = [host];
+  if (host.includes(".")) {
+    domainVariants.push(`.${host}`);
+  }
+
+  cookieNames.forEach((name) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    domainVariants.forEach((domain) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${domain}`;
+    });
+  });
+}
+
+function loadAnalytics() {
+  const measurementId = analyticsMeasurementId();
+  if (!measurementId || state.analyticsLoaded) {
+    return;
+  }
+
+  window[`ga-disable-${measurementId}`] = false;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag =
+    window.gtag ||
+    function gtag() {
+      window.dataLayer.push(arguments);
+    };
+
+  const existingScript = document.querySelector(`script[data-ga-measurement-id="${measurementId}"]`);
+  if (!existingScript) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+    script.dataset.gaMeasurementId = measurementId;
+    document.head.appendChild(script);
+  }
+
+  window.gtag("js", new Date());
+  window.gtag("config", measurementId, { anonymize_ip: true });
+  state.analyticsLoaded = true;
+}
+
+function updateConsentUI() {
+  const hasChoice = state.analyticsConsent === "granted" || state.analyticsConsent === "denied";
+  const showBanner = state.consentBannerOpen || !hasChoice;
+  ui.consentBanner?.classList.toggle("hidden", !showBanner);
+  ui.consentManage?.classList.toggle("hidden", showBanner);
+}
+
+function setAnalyticsConsent(status) {
+  state.analyticsConsent = status;
+  state.consentBannerOpen = false;
+  localStorage.setItem("planner-analytics-consent", status);
+
+  const measurementId = analyticsMeasurementId();
+  if (status === "granted") {
+    loadAnalytics();
+  } else {
+    if (measurementId) {
+      window[`ga-disable-${measurementId}`] = true;
+    }
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    }
+    clearAnalyticsCookies();
+  }
+
+  updateConsentUI();
 }
 
 function getNiceStep(roughStep) {
@@ -1459,6 +1568,10 @@ function updateAccessUI() {
   });
 }
 
+if (state.analyticsConsent === "granted") {
+  loadAnalytics();
+}
+
 function persistPremiumAccess() {
   localStorage.setItem("planner-premium-unlocked", state.premiumUnlocked ? "true" : "false");
 }
@@ -1652,6 +1765,12 @@ ui.promoCode?.addEventListener("keydown", (event) => {
     handlePromoSubmit();
   }
 });
+ui.consentAccept?.addEventListener("click", () => setAnalyticsConsent("granted"));
+ui.consentDeny?.addEventListener("click", () => setAnalyticsConsent("denied"));
+ui.consentManage?.addEventListener("click", () => {
+  state.consentBannerOpen = true;
+  updateConsentUI();
+});
 ui.ideasForm?.addEventListener("submit", handleIdeasSubmit);
 ui.scenarioGrid?.addEventListener("input", (event) => {
   const target = event.target;
@@ -1675,5 +1794,6 @@ ui.paymentButtons.forEach((button) => {
 applyTranslations();
 formatAmountFields();
 updateAccessUI();
+updateConsentUI();
 toggleTab("basic");
 refresh();
