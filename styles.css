@@ -177,7 +177,7 @@ input:focus-visible {
 
 .tab-button.is-unlocked .premium-lock-badge,
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .tab-lock-icon {
